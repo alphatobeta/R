@@ -1,0 +1,132 @@
+---
+title: "Rmarkdown HandBook"
+author: "Cheng"
+date: "2016年9月4日"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+本文档主要简述Rmarkdown的基本用法。
+
+***
+# Markdown语法
+
+采用的是Markdown语法，需要快速浏览，[可以看](http://rmarkdown.rstudio.com/lesson-8.html)
+
+插入链接
+[R Project](www.r-project.org/)  
+R Logo:![](https://www.r-project.org/Rlogo.png)
+
+无序列表
+
+* unordered list
+* item 2
+
+有序列表
+
+1. ordered list
+2. item 2  
+
+***
+
+# 基本用法
+输出html，docx，pdf
+需要编辑编辑YAML表头
+
+
+## 选择输出格式
+分别是html、pdf、docx、beamer幻灯片(pdf)、ioslides幻灯片(html)：  
+output: html_document html  
+output: pdf_document  
+output: word_document  
+output: beamer_presentation  
+output: ioslides_presentation  
+
+
+## 嵌入代码
+嵌入R代码 
+```{r, warning=TRUE}
+1:20
+```
+**具体的选项：**  
+eval TRUE 是否估计代码的值及显示其结果  
+echo TRUE 显示结果时，是否也一同显示代码  
+warning TRUE 是否显示警告  
+error FALSE 是否显示错误  
+message TRUE 是否显示消息  
+tidy FALSE 是否调整代码的显示格式，使其更整洁  
+results "markup" "markup"（标记显示） , "asis"(文本显示） ,"hold"（末尾显示） 或 "hide"（隐藏）  
+cache FALSE 为了⽅便以后的提交，是否缓存结果  
+comment "##" 注释符号，用于结果之前  
+fig.width 7 由代码块⽣成的图表的宽度，英寸  
+fig.height 7 由代码块⽣成的图表的高度，英寸  
+
+嵌入Python代码 
+```{python,engine.path="F:\\ProgramFiles\\Anaconda\\Scripts\\ipython3.exe"}
+x ="hello, python world!"
+print(x)
+print(x.split(" "))
+# print("中文")
+```
+
+## 提交
+点击Knit按钮
+
+生成交互式报告，需要是html格式才可以；在yaml表头插入runtime: shiny；然后点击Run Document。
+其实不用shiny，单纯用html+交互式图表也可以实现网页部分交互，如Plotly图库。
+
+
+# 高级用法
+具体如本文件的yaml表头所示。
+toc: yes表示输出目录，number_sections: yes表示目录有序号。
+
+theme: readable主题。主题有"default" "cerulean" "journal" "flatly" "readable" "spacelab" "united" "cosmo"。
+
+图形大小控制。在html_document下标注：fig_width: 7；fig_height: 6。
+
+如果是自己加入CSS：  
+html_document:  
+css: my_own.css  
+
+
+更精确的定位方式,把"[1.一级目录](#1)"放在文档前，可以生成精确的链接。  
+```
+[1.一级目录](#1)  
+[1.1二级目录](#1.1)  
+[1.1.1三级目录](#1.1.1)  
+<h1 id='1'> 一级目录 </h1>  
+<h2 id='1.1'> 二级目录 </h2>  
+<h3 id='1.1.1'> 三级目录 </h3>  
+```
+
+# 具体例子
+计算
+```{r}
+library(DT)
+datatable(iris)
+summary(iris)
+```
+
+散点图
+```{r}
+library(plotly)
+plot_ly(data = iris, x = Sepal.Length, y = Petal.Length, mode = "markers",
+        color = Species)
+```
+时间序列图
+```{r}
+p <- plot_ly(economics, x = date, y = uempmed, name = "unemployment")
+p %>% add_trace(y = fitted(loess(uempmed ~ as.numeric(date))), x = date)
+```
+
+
+# 更多的参考资料
+- [Rmarkdown](http://rmarkdown.rstudio.com/index.html)
+- [Cheat Sheet](https://www.rstudio.com/resources/cheatsheets/)
+- Dynamic Documents with R and knitr, 2nd Edition
+- Reproducible Research with R and RStudio，2nd Edition
+

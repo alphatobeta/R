@@ -1,0 +1,46 @@
+---
+title: "Stock market data simulation"
+author: "Cheng"
+output: html_document
+---
+
+```{r}
+library(DT)
+library(data.table)
+rd <- round(rnorm(1000, mean=0.1, sd=3),2)
+roa <- round(rnorm(1000, mean=0.25, sd=0.3),2)
+size <- round(rnorm(1000, mean=1000, sd=300),2)
+size[size<0]<-0
+e <- round(rnorm(1000, mean=0, sd=1),3)
+soe<-sample(c("中央国有","地方国有","民营企业"),1000,replace=T)
+y <- 1+0.68*rd+0.23*roa+0.05*log(size+1)+e
+y  <- round(y,2)
+stkcd=rep(1:200, each = 5) 
+year=rep(2011:2015, 200)   # 巧妙之处
+dta=data.table(stkcd,year,y,rd,roa,size,e,soe)
+setorder(dta, +stkcd, +year)
+datatable(dta, filter = 'top', options = list(pageLength =20, autoWidth = TRUE))
+
+# 把股票代码整的更像
+library(stringr)
+dta$stkcd <- paste ("00000", dta$stkcd,sep = "", collapse = NULL)
+dta$stkcd <- str_sub(dta$stkcd, -6,-1)
+# 加一个行业
+dta[,industry:=sample(c("传统制造业","电子硬件","数据分析","量子通信"),1000,replace = TRUE)]
+
+# 改变观测值
+dta$stkcd[1000] <- "ok"
+# 单变量滞后
+dta[,lag_roa:=shift(roa,n=1,fill = NA,type="lag"),by=stkcd]
+# 多变量滞后
+cols = c("rd","size")
+anscols = paste("lag", cols, sep="_")
+dta[, (anscols) := shift(.SD, n=1, fill=NA, "lag"), .SDcols=cols,by=stkcd]
+
+
+pgr <- plm.data(dta, index = c("stkcd", "year")) 
+m1 <- plm(formula = y ~ lag(rd) + roa + size, data = pgr, model = "within")
+prob1 <- predict(object = m1, newdata= dta, type = 'response')
+m2 <- plm(formula = y ~ rd + roa + size, data = pgr, model = "within")
+prob2 <- predict(object = m2, newdata= dta, type = 'response')
+```

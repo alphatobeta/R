@@ -3,4 +3,4 @@
 
 # awesome-R
 
-[awesome-R](https://github.com/chengjun90/Python-notes/blob/master/awesome-R.md)是[Cheng Jun](https://github.com/chengjun90)建立和维护Python资源列表，内容包括：网络爬虫、数据处理、数据可视化、文本处理等。该资源列表会持续更新。
+[awesome-R](https://github.com/chengjun90/Python-notes/blob/master/awesome-R.md)是[Cheng Jun](https://github.com/chengjun90)建立和维护R资源列表，内容包括：网络爬虫、数据处理、数据可视化、文本处理等。该资源列表会持续更新。

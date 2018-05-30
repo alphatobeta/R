@@ -28,8 +28,6 @@ Mailund（2017）的*Metaprogramming in R: Advanced Statistical Programming for 
 
 现在*Metaprogramming in R*是专门讲元编程，可以读一读。以下是阅读过程中的一些笔记。
 
-【**注意**】：本笔记尚未完成。
-
 ## 写作环境
 版本信息：
 ```{r}
@@ -63,16 +61,75 @@ formals(myfun)
 body(myfun)
 environment(myfun)
 ```
-上面两个例子就可以发现formals主要是函数参数和参数的默认值。
+上面两个例子就可以发现formals主要是函数参数和参数的默认值。用str一看便知。
+```{r}
+str(formals(myfun))
+```
+说完了formals来看body。
+```{r}
+body(myfun)
+```
+str(body(myfun))的结果看着头大。
+```{r}
+str(body(myfun))
+```
 
+```{r}
+class(body(myfun))
+typeof(body(myfun))
+```
+eval可以对body进行求值，不过要给参数传值。
+```{r}
+eval(body(myfun), list(x = 1, y = 2))
+```
+## 修改函数
+```{r}
+myfun <- function(x = 1, y = 2) {
+    z = x + y
+}
+print(myfun(3,4))
+body(myfun)
+```
+```{r}
+fun_body <- body(myfun)
+length(fun_body)
+fun_body[[1]]
+fun_body[[2]]
+fun_body[[2]] <- quote(x * y)
+eval(fun_body, list(x = 3, y = 4))
+```
+不过，读完了这一节，还没掌握如何深度地修改body。
 
 # Inside a Function Call
 
+路人甲飘过……
+
 # Expressions and Environments
+
+路人乙飘过……
+
+不搞那么深入。
 
 # Manipulating Expressions
 
+```{r}
+qu <- quote(12 + 3)
+qu
+length(qu)
+qu[[1]]
+qu[[2]]
+qu[[3]]
+```
+```{r}
+qu[[3]] <- quote(6)
+eval(qu)
+```
+可以对表达式进行修改。
+
 # Working with Substitutions
+
+## quote
+
 quote函数主要是用来捕获表达式。
 ```{r}
 quote(1 + 2)
@@ -85,8 +142,51 @@ bquote(mean(.(mtcars$mpg)))
 ```{r}
 bquote(.(1 + 2 ) + 3)
 ```
+
+## parse和deparse
+
+parse和deparse是一个相对的函数。
+
+parse把字符串解析成表达式，而deparse则把表达式逆解析为字符串。
+```{r}
+deparse(quote(1 + 2))
+class(deparse(quote(1 + 2)))
+
+parse(text = "1+2")
+class(parse(text = "1+2"))
+```
+
+## substitute
+
+substitute可以捕捉表达式而不进行计算。substitute()返回的结果和quote()有一定差异。
+```{r}
+substitute(1 + 2)
+class(substitute(1 + 2))
+```
+## 非标准计算
+
+非标准计算，Nonstandard Evaluation。
+
+```{r}
+eval(quote(x * y), envir = list(x = 4, y = 25))
+```
+mean(mtcars$mpg)可以计算出mpg的均值。如果是用非标准计算，有以下两个例子：
+```{r}
+mean(mtcars$mpg)
+eval(quote(mean(mpg)), envir = mtcars)
+```
+
+```{r}
+exps <- "mean(mpg)"
+eval(parse(text = exps), envir = mtcars)
+```
+上面这两个例子可能是一般R语言用户最可能用到的非标准计算。我自己用到就是利用字符函数拼接成一个大字符串，然后拿去给parse()，然后交给eval()，在计算的时候要告诉eval()你所在的求值环境，即给envir传值。
+
+
+
 # 结语
 这里只是了解一些R自带的元编程功能。
 
 更进一步可以参看第三方包[rlang](https://github.com/r-lib/rlang)，其中设计了一个$tidy \  eval$框架。
 
+哈哈，元编程了解够用就行。路人丙飘过……

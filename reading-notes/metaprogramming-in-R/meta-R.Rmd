@@ -1,0 +1,92 @@
+---
+title: "R语言元编程阅读笔记"
+documentclass: ctexart
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    includes:
+       in_header: header.tex
+classoption: "hyperref,"
+geometry: margin=2cm
+fontsize: 12pt
+---
+
+\clearpage
+
+# 准备工作
+
+## 说明
+Mailund（2017）的*Metaprogramming in R: Advanced Statistical Programming for Data Science,Analysis and Finance*是一本关于R语言元编程的书。
+
+在2017年在读完Wickham写的*Advanced R*对元编程有一定的了解，还写了两份分享：
+
+- [R语言进阶 | 非标准计算base](https://zhuanlan.zhihu.com/p/27652748)
+- [R语言进阶 | 非标准计算tidyeval](https://zhuanlan.zhihu.com/p/27652771)
+
+现在*Metaprogramming in R*是专门讲元编程，可以读一读。以下是阅读过程中的一些笔记。
+
+【**注意**】：本笔记尚未完成。
+
+## 写作环境
+版本信息：
+```{r}
+devtools::session_info()
+```
+
+## 许可协议说明
+```{r echo=FALSE}
+knitr::include_graphics("by-sa.png")
+```
+
+本作品采用[知识共享署名-相同方式共享 4.0 国际许可协议](http://creativecommons.org/licenses/by-sa/4.0/)进行许可。
+
+# Anatomy of a Function
+## 理解函数
+上来就告诉读者函数有三个部分formals，body和environment。
+```{r}
+myfun <- function(x){
+    mean(x)
+}
+formals(myfun)
+body(myfun)
+environment(myfun)
+```
+```{r}
+myfun <- function(x = 1, y = 2) {
+    z = x + y
+    return(z)
+}
+formals(myfun)
+body(myfun)
+environment(myfun)
+```
+上面两个例子就可以发现formals主要是函数参数和参数的默认值。
+
+
+# Inside a Function Call
+
+# Expressions and Environments
+
+# Manipulating Expressions
+
+# Working with Substitutions
+quote函数主要是用来捕获表达式。
+```{r}
+quote(1 + 2)
+quote(mean(mtcars$mpg))
+```
+bquote是对.()进行计算，然后再捕获表达式。示例如下。
+```{r}
+bquote(mean(.(mtcars$mpg)))
+```
+```{r}
+bquote(.(1 + 2 ) + 3)
+```
+# 结语
+这里只是了解一些R自带的元编程功能。
+
+更进一步可以参看第三方包[rlang](https://github.com/r-lib/rlang)，其中设计了一个$tidy \  eval$框架。
+
